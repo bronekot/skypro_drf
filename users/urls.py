@@ -1,9 +1,8 @@
 from django.urls import path
-from . import views
+from .views import PaymentListView
 
 app_name = "users"
 
 urlpatterns = [
-    # Пример маршрута
-    path("", views.index, name="index"),
+    path("payments/", PaymentListView.as_view(), name="payment-list"),
 ]

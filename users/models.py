@@ -1,3 +1,5 @@
+# type: ignore
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
@@ -6,6 +8,36 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from django.db import models
+from django.conf import settings
+from lms.models import Course, Lesson
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+
+
+class Payment(models.Model):
+    PAYMENT_METHOD_CHOICES = [
+        ("cash", "Наличные"),
+        ("transfer", "Перевод на счет"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    paid_course = models.ForeignKey(
+        Course, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    paid_lesson = models.ForeignKey(
+        Lesson, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
+
+    def __str__(self):
+        return f"Оплата от {self.user.email} на {self.payment_date}"
 
 
 class UserManager(BaseUserManager):
