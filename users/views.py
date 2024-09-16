@@ -11,9 +11,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .filters import PaymentFilter
 from .models import Course, Lesson, Payment
 from .permissions import IsModerator, IsOwner
-from .serializers import (CourseSerializer, CustomTokenObtainPairSerializer,
-                          LessonSerializer, PaymentSerializer,
-                          RegisterSerializer, UserSerializer)
+from .serializers import (
+    CourseSerializer,
+    CustomTokenObtainPairSerializer,
+    LessonSerializer,
+    PaymentSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 
 @extend_schema(tags=["Payments"])

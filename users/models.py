@@ -1,8 +1,13 @@
 # type: ignore
 
 from django.conf import settings
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        Group, Permission, PermissionsMixin)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    Group,
+    Permission,
+    PermissionsMixin,
+)
 from django.db import models
 
 from lms.models import Course, Lesson

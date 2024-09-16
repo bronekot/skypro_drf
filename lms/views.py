@@ -1,4 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +9,7 @@ from rest_framework.views import APIView
 from .models import Course, Lesson, Subscription
 from .paginators import StandardResultsSetPagination
 from .serializers import CourseSerializer, LessonSerializer
+from .tasks import send_course_update_email  # Им
 
 
 class SubscriptionView(APIView):
@@ -34,6 +37,14 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     pagination_class = StandardResultsSetPagination
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        course = self.get_object()
+        subscriptions = Subscription.objects.filter(course=course)
+        for subscription in subscriptions:
+            send_course_update_email.delay(subscription.user.email, course.name)
+        return response
 
 
 class LessonListCreate(generics.ListCreateAPIView):
