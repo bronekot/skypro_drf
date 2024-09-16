@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -8,9 +9,13 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     preview = models.ImageField(upload_to="course_previews/", blank=True)
     description = models.TextField()
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="courses", default=1
-    )
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses")
+    last_update = models.DateTimeField(auto_now=True)
+
+    def is_update_allowed(self):
+        if not self.last_update:
+            return True
+        return (timezone.now() - self.last_update).total_seconds() > 4 * 3600
 
 
 class Lesson(models.Model):
@@ -21,9 +26,7 @@ class Lesson(models.Model):
     )
     video_link = models.URLField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="lessons", default=1
-    )
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lessons")
 
 
 class Subscription(models.Model):
