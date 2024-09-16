@@ -1,11 +1,15 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
+
 from .views import (
-    PaymentListView,
-    UserListView,
-    UserDetailView,
-    RegisterView,
+    CreateCheckoutSessionView,
+    CreatePriceView,
+    CreateProductView,
     CustomTokenObtainPairView,
+    PaymentListView,
+    RegisterView,
+    UserDetailView,
+    UserListView,
 )
 
 app_name = "users"
@@ -17,4 +21,11 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("create-product/", CreateProductView.as_view(), name="create-product"),
+    path("create-price/", CreatePriceView.as_view(), name="create-price"),
+    path(
+        "create-checkout-session/",
+        CreateCheckoutSessionView.as_view(),
+        name="create-checkout-session",
+    ),
 ]

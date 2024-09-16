@@ -1,22 +1,11 @@
 # type: ignore
 
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    PermissionsMixin,
-    Group,
-    Permission,
-    BaseUserManager,
-)
-from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        Group, Permission, PermissionsMixin)
+from django.db import models
+
 from lms.models import Course, Lesson
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
 
 
 class Payment(models.Model):
@@ -66,12 +55,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     groups = models.ManyToManyField(
         Group,
-        related_name="custom_user_set",  # Добавляем related_name
+        related_name="custom_user_set",
         blank=True,
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name="custom_user_set",  # Добавляем related_name
+        related_name="custom_user_set",
         blank=True,
     )
 

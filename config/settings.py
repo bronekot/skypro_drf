@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+
+import stripe
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,16 +43,25 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_filters",
     "rest_framework",
+    "rest_framework_simplejwt",
     "users",
     "lms",
-    "rest_framework_simplejwt",
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",  # Добавлено
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Название вашего проекта",
+    "DESCRIPTION": "Описание вашего проекта",
+    "VERSION": "1.0.0",
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -99,6 +110,11 @@ DATABASES = {
         },
     }
 }
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+
+stripe.api_key = STRIPE_SECRET_KEY
 
 
 # Password validation

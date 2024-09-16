@@ -1,16 +1,14 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Payment, Lesson, Course
+
+from .models import Course, Lesson, Payment, User
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = "__all__"
-
-
-User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
