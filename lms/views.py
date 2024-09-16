@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, viewsets
+from rest_framework import generics, permissions, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Course, Lesson, Subscription
 from .paginators import StandardResultsSetPagination
+from users.permissions import IsModerator, IsOwner
 from .serializers import CourseSerializer, LessonSerializer
 
 
@@ -34,15 +35,18 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LessonListCreate(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LessonRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [permissions.IsAuthenticated]

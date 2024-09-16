@@ -11,9 +11,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .filters import PaymentFilter
 from .models import Course, Lesson, Payment
 from .permissions import IsModerator, IsOwner
-from .serializers import (CourseSerializer, CustomTokenObtainPairSerializer,
-                          LessonSerializer, PaymentSerializer,
-                          RegisterSerializer, UserSerializer)
+from .serializers import (
+    CourseSerializer,
+    CustomTokenObtainPairSerializer,
+    LessonSerializer,
+    PaymentSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 
 @extend_schema(tags=["Payments"])
@@ -22,6 +27,7 @@ class PaymentListView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = PaymentFilter
+    permission_classes = [permissions.IsAuthenticated]
 
 
 User = get_user_model()
@@ -47,6 +53,7 @@ class RegisterView(generics.CreateAPIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LessonViewSet(viewsets.ModelViewSet):
