@@ -27,6 +27,7 @@ class PaymentListView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = PaymentFilter
+    permission_classes = [permissions.IsAuthenticated]
 
 
 User = get_user_model()
@@ -52,6 +53,7 @@ class RegisterView(generics.CreateAPIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LessonViewSet(viewsets.ModelViewSet):
