@@ -1,18 +1,14 @@
-from rest_framework import generics, permissions, viewsets
-from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .permissions import IsModerator, IsOwner
-from .models import Payment, Lesson, Course
-from .serializers import PaymentSerializer, LessonSerializer, CourseSerializer
+
 from .filters import PaymentFilter
-
-
-from .serializers import (
-    UserSerializer,
-    RegisterSerializer,
-    CustomTokenObtainPairSerializer,
-)
+from .models import Course, Lesson, Payment
+from .permissions import IsModerator, IsOwner
+from .serializers import (CourseSerializer, CustomTokenObtainPairSerializer,
+                          LessonSerializer, PaymentSerializer,
+                          RegisterSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -37,6 +33,7 @@ class RegisterView(generics.CreateAPIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class PaymentListView(generics.ListAPIView):
@@ -44,6 +41,7 @@ class PaymentListView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = PaymentFilter
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LessonViewSet(viewsets.ModelViewSet):
