@@ -72,5 +72,3 @@ class LessonRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         if self.request.user.is_staff or IsModerator().has_permission(self.request, self):
             return Lesson.objects.all()
         return Lesson.objects.filter(course__owner=self.request.user)
-            return Lesson.objects.all()
-        return Lesson.objects.filter(course__owner=self.request.user)
