@@ -1,11 +1,33 @@
+# type: ignore
+
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
+    BaseUserManager,
     Group,
     Permission,
-    BaseUserManager,
+    PermissionsMixin,
 )
 from django.db import models
+
+from lms.models import Course, Lesson
+
+
+class Payment(models.Model):
+    PAYMENT_METHOD_CHOICES = [
+        ("cash", "Наличные"),
+        ("transfer", "Перевод на счет"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    paid_course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.SET_NULL)
+    paid_lesson = models.ForeignKey(Lesson, null=True, blank=True, on_delete=models.SET_NULL)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
+
+    def __str__(self):
+        return f"Оплата от {self.user.email} на {self.payment_date}"  # pylint: disable=no-member
 
 
 class UserManager(BaseUserManager):
@@ -34,12 +56,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     groups = models.ManyToManyField(
         Group,
-        related_name="custom_user_set",  # Добавляем related_name
+        related_name="custom_user_set",
         blank=True,
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name="custom_user_set",  # Добавляем related_name
+        related_name="custom_user_set",
         blank=True,
     )
 

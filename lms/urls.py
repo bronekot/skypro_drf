@@ -1,6 +1,14 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import CourseViewSet, LessonListCreate, LessonRetrieveUpdateDestroy
+
+from .views import (
+    CourseViewSet,
+    LessonListCreate,
+    LessonRetrieveUpdateDestroy,
+    SubscriptionView,
+)
+
+from .views import send_test_email
 
 app_name = "lms"
 
@@ -13,4 +21,6 @@ urlpatterns = [
     path(
         "lessons/<int:pk>/", LessonRetrieveUpdateDestroy.as_view(), name="lesson-detail"
     ),
+    path("subscribe/", SubscriptionView.as_view(), name="subscribe"),
+    path("send-test-email/", send_test_email, name="send_test_email"),
 ]

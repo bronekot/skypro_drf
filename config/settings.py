@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import socket
+from datetime import timedelta
 from pathlib import Path
+
+import stripe
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,10 +43,27 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
     "rest_framework",
+    "rest_framework_simplejwt",
     "users",
     "lms",
+    "drf_spectacular",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",  # Добавлено
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Название вашего проекта",
+    "DESCRIPTION": "Описание вашего проекта",
+    "VERSION": "1.0.0",
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -83,14 +104,23 @@ load_dotenv()
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "OPTIONS": {
             "client_encoding": "utf8",
         },
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
+
+print(DATABASES)
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+
+stripe.api_key = STRIPE_SECRET_KEY
 
 
 # Password validation
@@ -140,3 +170,41 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+EMAIL_BACKEND = "lms.custom_email_backend.CustomEmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+print(
+    EMAIL_HOST,
+    EMAIL_PORT,
+    EMAIL_USE_TLS,
+    EMAIL_USE_SSL,
+    EMAIL_HOST_USER,
+    EMAIL_HOST_PASSWORD,
+    DEFAULT_FROM_EMAIL,
+)
+
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "app_name.tasks.sample_task",
+        "schedule": timedelta(minutes=1),  # Выполнять каждую минуту
+    },
+    "deactivate_inactive_users": {
+        "task": "lms.tasks.deactivate_inactive_users",
+        "schedule": timedelta(days=1),  # Запускать ежедневно
+    },
+}
